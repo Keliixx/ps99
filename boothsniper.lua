@@ -3,6 +3,8 @@ local message1 = {}
 local Players = game:GetService('Players')
 local PlayerInServer = #Players:GetPlayers()
 local ostime = os.time()
+local platform = nil
+local teleportingEnabled = true
 
 -- Low-CPU
 game:GetService("RunService"):Set3dRenderingEnabled(false)
@@ -24,6 +26,30 @@ l.GlobalShadows = 0
 l.FogEnd = 9e9
 l.Brightness = 0
 settings().Rendering.QualityLevel = "1"
+if not workspace:FindFirstChild("Platform") then
+    platform = Instance.new("Part")
+    platform.Name = "Platform"
+    platform.Parent = workspace
+    platform.Anchored = true
+    platform.Position = Vector3.new(9021, -28, 2510)
+    platform.Size = Vector3.new(10, 1, 10)
+    platform.BrickColor = BrickColor.new("Baby blue")
+    platform.Transparency = 0.3
+else
+    platform = workspace.Platform
+end
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    local character = game:GetService("Players").LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local rootPart = character.HumanoidRootPart
+        local distanceToPlatform = (rootPart.Position - platform.Position).Magnitude
+        if distanceToPlatform > 5 then
+            rootPart.CFrame = CFrame.new(platform.Position + Vector3.new(0, 2, 0))
+        end
+    end
+end)
+
 for i, v in pairs(w:GetDescendants()) do
     if v:IsA("BasePart") and not v:IsA("MeshPart") then
         v.Material = "Plastic"
@@ -85,7 +111,6 @@ print("Executed LowCPU")
 -- Auto Reconnect
 task.spawn(function()    
     game:GetService("GuiService").ErrorMessageChanged:Connect(function()
-        SendInfo5()
         game.Players.LocalPlayer:Kick("Found An Error, Reconnecting...")
         print("Found An Error, Reonnecting...")
         wait (0.1) game:GetService("TeleportService"):Teleport(game.PlaceId)
