@@ -191,7 +191,7 @@ end
 
 local HttpService = game:GetService("HttpService")
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1108432679294226473/ky8mtSZMX6ouNjQiMScLZ5SpwmFOzNiKuo0RbkKF764EW2y1ByyLNzZqMAchQ2_chbJ8"
-function SendWebhook()
+function SendInfo()
     -- Check for webhook_url
     if not WEBHOOK_URL or WEBHOOK_URL == "" then return end
 
