@@ -189,33 +189,6 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
     end
 end
 
-local HttpService = game:GetService("HttpService")
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1108432679294226473/ky8mtSZMX6ouNjQiMScLZ5SpwmFOzNiKuo0RbkKF764EW2y1ByyLNzZqMAchQ2_chbJ8"
-function SendInfo()
-    -- Check for webhook_url
-    if not WEBHOOK_URL or WEBHOOK_URL == "" then return end
-
-    local embed = {
-            ["title"] = "asd",
-            ["description"] = "asd"
-        }
-      
-    -- Compatibility with Synapse and UNC executors (script-ware, krnl, WeAreDevs, Fluxus, Oxygen, Comet, etc...)  
-    (syn and syn.request or http_request or http.request) {
-        Url = WEBHOOK_URL,
-        Method = 'POST',
-        Headers = {
-            ['Content-Type'] = 'application/json'
-        },
-        Body = HttpService:JSONEncode({
-            embeds = {embed} 
-        })
-    }
-end
-
--- Use the function when you want to send something.
--- SendWebhook()
-
 local function checklisting(uid, gems, item, version, shiny, amount, username, playerid)
     local Library = require(game.ReplicatedStorage:WaitForChild('Library'))
     gems = tonumber(gems)
@@ -228,31 +201,26 @@ end)
         local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         if boughtPet == true then
             processListingInfo(uid, gems, item, version, shiny, amount, username)
-            SendInfo()
         end
     elseif item == "Titanic Christmas Present" and gems <= 25000 then
         local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         if boughtPet == true then
             processListingInfo(uid, gems, item, version, shiny, amount, username)
-            SendInfo()
         end
     elseif string.find(item, "Exclusive") and gems <= 25000 then
         local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         if boughtPet == true then
             processListingInfo(uid, gems, item, version, shiny, amount, username)
-            SendInfo()
         end
     elseif type.huge and gems <= 1000001 then
         local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         if boughtPet == true then
             processListingInfo(uid, gems, item, version, shiny, amount, username)
-            SendInfo()
         end     
     elseif type.titanic and gems <= 10000000 then
         local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         if boughtPet == true then
             processListingInfo(uid, gems, item, version, shiny, amount, username)
-            SendInfo()
         end
     end
 end
