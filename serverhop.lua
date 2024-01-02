@@ -1,4 +1,3 @@
-task.wait(10)
 local Player = game.Players.LocalPlayer    
 local Http = game:GetService("HttpService")
 local TPS = game:GetService("TeleportService")
