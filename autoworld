@@ -138,7 +138,7 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
         if not Webhook_Url1 or Webhook_Url1 == "" then print("Webhook Url 1 Is None") return end
 
         local embed = {
-                ["title"] = "**" .. snipeMessage .. tostring(amount) .. " From " .. tostring(boughtFrom) .. " For " .. tostring(gems) .. "Gems!**",
+                ["title"] = "**" .. snipeMessage .. tostring(amount) .. " From " .. tostring(boughtFrom) .. " For " .. tostring(gems) .. " Gems!**",
                 ["description"] = "**Gems Left: " .. tostring(gemamount) .. "**"
             }
             
@@ -216,7 +216,7 @@ Booths_Broadcast.OnClientEvent:Connect(function(username, message)
                         local version = data["pt"]
                         local shiny = data["sh"]
                         local amount = data["_am"]
-                        checklisting(uid, gems, item, version, shiny, amount, username , playerID)
+                        checklisting(uid, gems, item, version, shiny, amount, username, playerID)
                     end
                 end
             end
