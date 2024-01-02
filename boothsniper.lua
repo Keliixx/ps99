@@ -1,5 +1,5 @@
+local osclock = os.clock()
 repeat task.wait() until game:IsLoaded()
-task.wait(10)
 
 game:GetService("RunService"):Set3dRenderingEnabled(false)
 local Booths_Broadcast = game:GetService("ReplicatedStorage").Network:WaitForChild("Booths_Broadcast")
@@ -67,7 +67,7 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
     if shiny then
         snipeMessage = snipeMessage .. " Shiny "
     end
-
+    
     snipeMessage = snipeMessage .. item .. "**"
     
     local message1 = {
@@ -75,10 +75,12 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
         ['embeds'] = {
             {
 		["author"] = {
-			["name"] = "Free Money",
+			["name"] = "Luna 🌚",
+			["icon_url"] = "https://cdn.discordapp.com/attachments/1149218291957637132/1190527382583525416/new-moon-face_1f31a.png?ex=65a22006&is=658fab06&hm=55f8900eef039709c8e57c96702f8fb7df520333ec6510a81c31fc746193fbf2&",
 		},
                 ['title'] = snipeMessage,
-                ["color"] = webcolor,,
+                ["color"] = webcolor,
+                ["timestamp"] = DateTime.now():ToIsoDate(),
                 ['fields'] = {
                     {
                         ['name'] = "__Price:__",
@@ -86,14 +88,14 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
                     },
                     {
                         ['name'] = "__Bought from:__",
-                        ['value'] = tostring(boughtFrom)",
+                        ['value'] = tostring(boughtFrom),
                     },
                     {
                         ['name'] = "__Amount:__",
-                        ['value'] = tostring(amount),
+                        ['value'] = tostring(amount) .. "x",
                     },
                     {
-                        ['name'] = "__Gems Left:__",
+                        ['name'] = "__Remaining gems:__",
                         ['value'] = tostring(gemamount) .. " 💎",
                     },      
                     {
@@ -103,7 +105,7 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
                 },
 		["footer"] = {
                         ["icon_url"] = "https://cdn.discordapp.com/attachments/1149218291957637132/1190527382583525416/new-moon-face_1f31a.png?ex=65a22006&is=658fab06&hm=55f8900eef039709c8e57c96702f8fb7df520333ec6510a81c31fc746193fbf2&", -- optional
-                        ["text"] = "Heavily Modified by Root, Cool Sniper"
+                        ["text"] = "Heavily Modified by Root"
 		}
             },
         }
@@ -196,110 +198,37 @@ Booths_Broadcast.OnClientEvent:Connect(function(username, message)
                     end
                 end
             end
-	    end
+	end
     end
 end)
 
---// SETTINGS!!
-local MINIMUM_PLAYERS = 1
+-- Webhook Function For PingStat
+function SendInfo1()
+    if not Webhook_Url1 or Webhook_Url1 == "" then print("Please Enter Webhook URL To Send Info") return end
 
---// Services
-local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
-local TeleportService = game:GetService("TeleportService")
-local LocalPlayer = Players.LocalPlayer
+    local embed = {
+            ["title"] = "**" .. game.Players.localPlayer.name .. " 1 Hour Elapsed**",
+            ["description"] = "**Server Hopping...**"
 
---// Variables
-local PlaceId = game.PlaceId
-local fileName = string.format("%s_servers.json", tostring(PlaceId))
-local ServerHopData = { 
-    CheckedServers = {},
-    LastTimeHop = nil,
-    CreatedAt = os.time() -- We can use it later to clear the checked servers
-    -- TODO: Save the cursor? Prob this can help on fast-hops
-}
-
--- Load data from disk/workspace
-if isfile(fileName) then
-    local fileContent = readfile(fileName)
-    ServerHopData = HttpService:JSONDecode(fileContent)
-end
-
--- Optional log feature
-if ServerHopData.LastTimeHop then
-    print("Took", os.time() - ServerHopData.LastTimeHop, "seconds to server hop")
-end
-
-local ServerTypes = { ["Normal"] = "desc", ["Low"] = "asc" }
-
-function Jump(serverType)
-    serverType = serverType or "Normal" -- Default parameter
-    if not ServerTypes[serverType] then serverType = "Normal" end
-    
-    local function GetServerList(cursor)
-        cursor = cursor and "&cursor=" .. cursor or ""
-        local API_URL = string.format('https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100', tostring(PlaceId), ServerTypes[serverType])
-        return HttpService:JSONDecode(game:HttpGet(API_URL .. cursor))
-    end
-
-    local currentPageCursor = nil
-    while true do 
-        local serverList = GetServerList(currentPageCursor)
-        currentPageCursor = serverList.nextPageCursor
-           
-        for _, server in ipairs(serverList.data) do
-            if server.playing and tonumber(server.playing) >= MINIMUM_PLAYERS and tonumber(server.playing) < Players.MaxPlayers and not table.find(ServerHopData.CheckedServers, tostring(server.id)) then     
-                -- Save current data to disk/workspace
-                ServerHopData.LastTimeHop = os.time() -- Last time that tried to hop
-                table.insert(ServerHopData.CheckedServers, server.id) -- Insert on our list
-                writefile(fileName, HttpService:JSONEncode(ServerHopData)) -- Save our data
-                TeleportService:TeleportToPlaceInstance(PlaceId, server.id, LocalPlayer) -- Actually teleport the player
-                -- Change the wait time if you take long times to hop (or it will add more than 1 server in the file)
-                wait(0.25)
-            end
-        end
+        }
         
-        if not currentPageCursor then break else wait(0.25) end
-    end  
+    (syn and syn.request or http_request or http.request) {
+        Url = getgenv().webhook_hop;
+        Method = 'POST';
+        Headers = {
+            ['Content-Type'] = 'application/json';
+        };
+        Body = HttpService:JSONEncode({
+            
+            embeds = {embed} 
+        })
+    }
+
 end
 
--- check current server ping
-function CheckPingStat()
-    if pingValue >= pingThreshold then
-        print("Ping Is Higher Than 310, Sevrer Hopping...")
-        SendInfo1()
-        task.wait(1)
-        Jump("Normal")
-    else
-        print("Ping is sufficent. No Server Hop Needed")
-    end
-end
-
--- check current server player count
-local function CheckPlayerCount()
-    if playerCount < 25 then
-        print("Server Hopping.")
-        SendInfo2()
-        task.wait(1)
-        Jump("Normal")
-    else
-        print("Player Count Is Sufficent. No Server Hop Needed.")
-    end
-end
-
--- Check PingStat And PlayerCoutnt Every A Minute
-task.spawn(function()
-    while task.wait(60) do
-        CheckPingStat()
-        CheckPlayerCout()
-    end
-end)
-
--- Server Hop After A Hour
 task.spawn(function()
     while task.wait(3600) do
-        Jump("Normal")
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Keliixx/ps99/main/serverhop.lua"))()
+        SendInfo1()
     end
 end)
-
-print("Executed Scripts")
