@@ -138,7 +138,7 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
         if not Webhook_Url1 or Webhook_Url1 == "" then print("Webhook Url 1 Is None") return end
 
         local embed = {
-                ["title"] = "**" .. snipeMessage .. tostring(amount) .. "From " .. tostring(boughtFrom).. "For " .. tostring(gems) .. "Gems!**",
+                ["title"] = "**" .. snipeMessage .. tostring(amount) .. " From " .. tostring(boughtFrom) .. " For " .. tostring(gems) .. "Gems!**",
                 ["description"] = "**Gems Left: " .. tostring(gemamount) .. "**"
             }
             
