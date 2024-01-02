@@ -1,104 +1,299 @@
--- MADE BY MLGWARFARE ON DISCORD
-local savemodule = require(game:GetService("ReplicatedStorage").Library.Client.Save)
-local SaveFile = savemodule.Get(game.Players.LocalPlayer)
-local UnlockedAreas = SaveFile.UnlockedZones
+local Webhook_Url1 = "https://discord.com/api/webhooks/1191672154962542653/ISzfk7_vhXON_0xktuXE-EMqwUlQnLbJvKglwbIb52a92KCCsNpCGPFC6Q-X_o-ehOYS"
+local Webhook_Url2 = ""
+local Webhook_Url3 = ""
+local Webhook_Url4 = ""
 
-local lplr = game:GetService("Players").LocalPlayer
-local Character = lplr.Character or lplr.CharacterAdded:Wait()
-local HRP = Character:WaitForChild("HumanoidRootPart")
-local Enabled = true
-local Mouse = lplr:GetMouse()
-local MapContainer = workspace:WaitForChild("Map")
-local AreaModules = game:GetService("ReplicatedStorage"):WaitForChild("__DIRECTORY"):WaitForChild("Zones")
-local AreaUnlocker = game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Zones_RequestPurchase")
-local CurrentArea = 0 -- index to get next area
-local AreaToUnlock = ""
-local FieldPart = nil -- instance
-local AreaList = {}
+local Booths_Broadcast = game:GetService("ReplicatedStorage").Network:WaitForChild("Booths_Broadcast")
+local message1 = {}
+local Players = game:GetService('Players')
+local PlayerInServer = #Players:GetPlayers()
+local ostime = os.time()
+local platform = nil
+local teleportingEnabled = true
+--// SETTINGS!!
+local MINIMUM_PLAYERS = 25
 
--- grab new hrp
-local c,c2
--- enable/disable
-c2 = Mouse.KeyDown:Connect(function(Key)
-	if Key == "p" then Enabled = not Enabled end
-end)
+--// Services
+local Players2 = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local LocalPlayer = Players.LocalPlayer
 
--- get list of areas
-for _,v in pairs(AreaModules:GetDescendants()) do
-	if not v:IsA("ModuleScript") then continue end
-	local Info = string.split(v.Name," | ")
-	AreaList[tonumber(Info[1])] = Info[2]
+-- Low-CPU
+game:GetService("RunService"):Set3dRenderingEnabled(false)
+local RunService = game:GetService("RunService")
+UserSettings():GetService("UserGameSettings").MasterVolume = 0
+local decalsyeeted = true
+local g = game
+local w = g.Workspace
+local l = g.Lighting
+local t = w.Terrain
+sethiddenproperty(l,"Technology",2)
+sethiddenproperty(t,"Decoration",false)
+game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.Chat,false)
+t.WaterWaveSize = 0
+t.WaterWaveSpeed = 0
+t.WaterReflectance = 0
+t.WaterTransparency = 0
+l.GlobalShadows = 0
+l.FogEnd = 9e9
+l.Brightness = 0
+settings().Rendering.QualityLevel = "1"
+
+for i, v in pairs(w:GetDescendants()) do
+    if v:IsA("BasePart") and not v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif (v:IsA("Decal") or v:IsA("Texture")) and decalsyeeted then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+        v.Enabled = false
+    elseif v:IsA("MeshPart") and decalsyeeted then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = 10385902758728957
+    elseif v:IsA("SpecialMesh") and decalsyeeted  then
+        v.TextureId=0
+    elseif v:IsA("ShirtGraphic") and decalsyeeted then
+        v.Graphic=1
+    elseif (v:IsA("Shirt") or v:IsA("Pants")) and decalsyeeted then
+        v[v.ClassName.."Template"]=1
+    end
+end
+for i = 1,#l:GetChildren() do
+    e=l:GetChildren()[i]
+    if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+        e.Enabled = false
+    end
+end
+w.DescendantAdded:Connect(function(v)
+   if v:IsA("BasePart") and not v:IsA("MeshPart") then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+    elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
+        v.Transparency = 1
+    elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+        v.Lifetime = NumberRange.new(0)
+    elseif v:IsA("Explosion") then
+        v.BlastPressure = 1
+        v.BlastRadius = 1
+    elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+        v.Enabled = false
+    elseif v:IsA("MeshPart") and decalsyeeted then
+        v.Material = "Plastic"
+        v.Reflectance = 0
+        v.TextureID = 10385902758728957
+    elseif v:IsA("SpecialMesh") and decalsyeeted then
+        v.TextureId=0
+    elseif v:IsA("ShirtGraphic") and decalsyeeted then
+        v.ShirtGraphic=1
+    elseif (v:IsA("Shirt") or v:IsA("Pants")) and decalsyeeted then
+        v[v.ClassName.."Template"]=1
+            end
+        end)
+print("Executed LowCPU")
+
+-- Auto Reconnect
+task.spawn(function()    
+    game:GetService("GuiService").ErrorMessageChanged:Connect(function()
+        print("Found An Error, Reonnecting...")
+        wait (0.1) game:GetService("TeleportService"):Teleport(game.PlaceId)
+            end);
+        end)
+print("Executed Auto-Reconnect")
+
+
+local function processListingInfo(uid, gems, item, version, shiny, amount, boughtFrom)
+    local snipeMessage = game.Players.LocalPlayer.Name .. " just sniped a "
+    local gemamount = game:GetService("Players").LocalPlayer.leaderstats["💎 Diamonds"].Value
+    if version then
+        if version == 2 then
+            version = "Rainbow"
+        elseif version == 1 then
+            version = "Golden"
+        end
+    else
+       version = "Normal"
+    end
+    
+    snipeMessage = snipeMessage .. version
+    
+    if shiny then
+        snipeMessage = snipeMessage .. " Shiny"
+    end
+    
+    snipeMessage = snipeMessage .. " " .. (item)
+    
+    print(snipeMessage)
+    
+    local HttpService = game:GetService("HttpService")
+    local Library = require(game.ReplicatedStorage.Library)
+    Library.Load()
+
+    function SendInfo1()
+        if not Webhook_Url1 or Webhook_Url1 == "" then print("Webhook Url 1 Is None") return end
+
+        local embed = {
+                ["title"] = "**" .. game.Players.localPlayer.name .. " Bought ".. tostring(amount) .. " " .. snipeMessage.. " For ".. tostring(gems) .. "Gems!**",
+                ["description"] = "**Gems Left: " .. tostring(gemamount) .. "**"
+            }
+            
+        (syn and syn.request or http_request or http.request) {
+            Url = Webhook_Url1;
+            Method = 'POST';
+            Headers = {
+                ['Content-Type'] = 'application/json';
+            };
+            Body = HttpService:JSONEncode({
+                
+                embeds = {embed} 
+            })
+        }
+    end
 end
 
------- AUTO GET ORBS/LOOTBAGS
-local OrbRemote = game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Orbs: Collect")
-local LootbagRemote = game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Lootbags_Claim")
-local OrbFolder = workspace:WaitForChild("__THINGS"):WaitForChild("Orbs")
-local LootbagFolder = workspace:WaitForChild("__THINGS"):WaitForChild("Lootbags")
 
-OrbFolder.ChildAdded:Connect(function(Orb)
-	task.wait(1.5)
-	Orb:PivotTo(HRP.CFrame)
-	OrbRemote:FireServer({Orb.Name})
-	task.wait()
-	Orb:Destroy()
-end)
-LootbagFolder.ChildAdded:Connect(function(Lootbag)
-	task.wait(4)
-	Lootbag:PivotTo(HRP.CFrame)
-	LootbagRemote:FireServer({Lootbag.Name})
-	task.wait()
-	Lootbag:Destroy()
-end)
--------------------
-
-c = lplr.CharacterAdded:Connect(function(Char)
-	Character = Char
-	HRP = Character:WaitForChild("HumanoidRootPart")
+local function checklisting(uid, gems, item, version, shiny, amount, username, playerid)
+    local Library = require(game.ReplicatedStorage:WaitForChild('Library'))
+    gems = tonumber(gems)
+    local type = {}
+    pcall(function()
+        type = Library.Directory.Pets[item]
 end)
 
-local function Unlock()
-	return AreaUnlocker:InvokeServer(AreaToUnlock)
+    if type.exclusiveLevel and gems <= 10000 and item ~= "Banana" and item ~= "Coin" then
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        if boughtPet == true then
+            processListingInfo(uid, gems, item, version, shiny, amount, username)
+            SendInfo1()
+        end
+    elseif item == "Titanic Christmas Present" and gems <= 25000 then
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        if boughtPet == true then
+            processListingInfo(uid, gems, item, version, shiny, amount, username)
+            SendInfo1()
+        end
+    elseif string.find(item, "Exclusive") and gems <= 25000 then
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        if boughtPet == true then
+            processListingInfo(uid, gems, item, version, shiny, amount, username)
+            SendInfo1()
+        end
+    elseif type.huge and gems <= 1000001 then
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        if boughtPet == true then
+            processListingInfo(uid, gems, item, version, shiny, amount, username)
+            SendInfo1()
+        end
+    elseif type.titanic and gems <= 10000000 then
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        if boughtPet == true then
+            processListingInfo(uid, gems, item, version, shiny, amount, username)
+            SendInfo1()
+        end
+    end
 end
 
--- find current area
-for Area,_ in next, UnlockedAreas do
-	local AreaNum = table.find(AreaList,Area)
-	if AreaNum > CurrentArea then
-		CurrentArea = AreaNum
-		AreaToUnlock = AreaList[AreaNum+1]
-		FieldPart = MapContainer:WaitForChild(AreaNum.." | "..Area):WaitForChild("INTERACT"):WaitForChild("BREAK_ZONES"):WaitForChild("BREAK_ZONE")
-		HRP.CFrame = FieldPart.CFrame
-		task.wait(.2) -- wait for the game to load in everything
-		--print("new greatest area",CurrentArea,AreaToUnlock)
-	end
+Booths_Broadcast.OnClientEvent:Connect(function(username, message)
+    local playerID = message['PlayerID']
+    if type(message) == "table" and message['PlayerID'] then
+        local listing = message["Listings"]
+        for key, value in pairs(listing) do
+            if type(value) == "table" then
+                local uid = key
+                local gems = value["DiamondCost"]
+                local itemdata = value["ItemData"]
+
+                if itemdata then
+                    local data = itemdata["data"]
+
+                    if data then
+                        local item = data["id"]
+                        local version = data["pt"]
+                        local shiny = data["sh"]
+                        local amount = data["_am"]
+                        checklisting(uid, gems, item, version, shiny, amount, username , playerID)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+--// Variables
+local PlaceId = game.PlaceId
+local fileName = string.format("%s_servers.json", tostring(PlaceId))
+local ServerHopData = { 
+    CheckedServers = {},
+    LastTimeHop = nil,
+    CreatedAt = os.time() -- We can use it later to clear the checked servers
+    -- TODO: Save the cursor? Prob this can help on fast-hops
+}
+
+-- Load data from disk/workspace
+if isfile(fileName) then
+    local fileContent = readfile(fileName)
+    ServerHopData = HttpService:JSONDecode(fileContent)
 end
 
-print("area to unlock:",AreaToUnlock)
-
-while true do
-	if Enabled then
-		-- attempt buy new area
-		if Unlock() then -- unlock succeeded
-			task.wait(3)
-			CurrentArea += 1
-			AreaToUnlock = AreaList[CurrentArea+1]
-			FieldPart = MapContainer:WaitForChild(CurrentArea.." | "..AreaList[CurrentArea]):WaitForChild("INTERACT"):WaitForChild("BREAK_ZONES"):WaitForChild("BREAK_ZONE")
-			HRP.CFrame = FieldPart.CFrame
-			
-			-- FOR TO DAYCARE ONLY
-			--if CurrentArea == 20 then
-				--print("DAYCARE UNLOCKED STOPPING SCRIPT")
-				--break
-			--end
-		else
-			HRP.CFrame = FieldPart.CFrame
-		end
-	else
-		break
-	end
-	task.wait(15)
+-- Optional log feature
+if ServerHopData.LastTimeHop then
+    print("Took", os.time() - ServerHopData.LastTimeHop, "seconds to server hop")
 end
 
-c:Disconnect()
-c2:Disconnect()
+local ServerTypes = { ["Normal"] = "desc", ["Low"] = "asc" }
+
+function Jump(serverType)
+    serverType = serverType or "Normal" -- Default parameter
+    if not ServerTypes[serverType] then serverType = "Normal" end
+    
+    local function GetServerList(cursor)
+        cursor = cursor and "&cursor=" .. cursor or ""
+        local API_URL = string.format('https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100', tostring(PlaceId), ServerTypes[serverType])
+        return HttpService:JSONDecode(game:HttpGet(API_URL .. cursor))
+    end
+
+    local currentPageCursor = nil
+    while true do 
+        local serverList = GetServerList(currentPageCursor)
+        currentPageCursor = serverList.nextPageCursor
+           
+        for _, server in ipairs(serverList.data) do
+            if server.playing and tonumber(server.playing) >= MINIMUM_PLAYERS and tonumber(server.playing) < Players2.MaxPlayers and not table.find(ServerHopData.CheckedServers, tostring(server.id)) then     
+                -- Save current data to disk/workspace
+                ServerHopData.LastTimeHop = os.time() -- Last time that tried to hop
+                table.insert(ServerHopData.CheckedServers, server.id) -- Insert on our list
+                writefile(fileName, HttpService:JSONEncode(ServerHopData)) -- Save our data
+                TeleportService:TeleportToPlaceInstance(PlaceId, server.id, LocalPlayer) -- Actually teleport the player
+                -- Change the wait time if you take long times to hop (or it will add more than 1 server in the file)
+                wait(0.5)
+            end
+        end
+        
+        if not currentPageCursor then break else wait(0.25) end
+    end  
+end
+
+-- check current server ping
+function CheckPingStat()
+    if pingValue >= pingThreshold then
+        print("Ping Is Higher Than 310, Sevrer Hopping...")
+        Jump("Normal")
+    else
+        print("Ping is sufficent. No Server Hop Needed")
+    end
+end
+
+-- check current server player count
+local function CheckPlayerCount()
+    if playerCount < 25 then
+        print("Server Hopping.")
+        Jump("Normal")
+    else
+        print("Player Count Is Sufficent. No Server Hop Needed.")
+    end
+end
