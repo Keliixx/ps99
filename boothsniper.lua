@@ -75,7 +75,7 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
         ['embeds'] = {
             {
 		["author"] = {
-			["name"] = "Free Money",,
+			["name"] = "Free Money",
 		},
                 ['title'] = snipeMessage,
                 ["color"] = webcolor,,
