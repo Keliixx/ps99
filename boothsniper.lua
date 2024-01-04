@@ -129,9 +129,9 @@ end
 
 local function tryPurchase(uid, gems, item, version, shiny, amount, username, class, playerid, buytimestamp, listTimestamp, ping, snipeNormal)
     if buytimestamp > listTimestamp then
-      task.wait(3.15 - Players.LocalPlayer:GetNetworkPing())
+      task.wait(3.12 - Players.LocalPlayer:GetNetworkPing())
     end
-    for i = 1,10 do
+    for i = 1,5 do
         local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, class, ping, boughtMessage, snipeNormal)
     end
