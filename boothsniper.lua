@@ -156,19 +156,9 @@ local function checklisting(uid, gems, item, version, shiny, amount, username, p
     local price = gems / amount
 
     if type.exclusiveLevel and price <= 10000 and item ~= "Banana" and item ~= "Coin" then
-        local endTime = os.time() + 4 -- Loop for 4 seconds
-
-        while os.time() < endTime do
-            -- Attempt to purchase the item using purchase:InvokeServer()
-            local boughtPet, boughtMessage = purchase:InvokeServer(playerid, uid)
-        
-            if boughtPet then
-                processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, ping)
-                break -- Exit the loop if the item is purchased successfully
-            end
-        
-            task.wait() -- Wait for a short period before attempting again
-        end
+        while task,wait() do
+        local boughtPet, boughtMessage = purchase:InvokeServer(playerid, uid)
+        processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, ping)
     elseif item == "Titanic Christmas Present" and price <= 25000 then
         local boughtPet, boughtMessage = purchase:InvokeServer(playerid, uid)
 	processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, ping)
