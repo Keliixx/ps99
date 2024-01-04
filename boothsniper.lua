@@ -8,7 +8,6 @@ Edmond: offered tips for optimization
 local osclock = os.clock()
 repeat task.wait() until game:IsLoaded()
 
-setfpscap(10)
 game:GetService("RunService"):Set3dRenderingEnabled(false)
 local Booths_Broadcast = game:GetService("ReplicatedStorage").Network:WaitForChild("Booths_Broadcast")
 local Players = game:GetService('Players')
@@ -30,22 +29,6 @@ Players.LocalPlayer.Idled:connect(function()
    task.wait(1)
    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 end)
-
-if PlayerInServer < 25 then
-    while task.wait(1) do
-	jumpToServer()
-    end
-end
-
-for i = 1, PlayerInServer do
-   for ii = 1,#alts do
-        if getPlayers[i].Name == alts[ii] and alts[ii] ~= Players.LocalPlayer.Name then
-            while task.wait(1) do
-		jumpToServer()
-	    end
-        end
-    end
-end
 
 local function processListingInfo(uid, gems, item, version, shiny, amount, boughtFrom, boughtStatus, class, mention, failMessage, snipeNormal)
     local gemamount = Players.LocalPlayer.leaderstats["💎 Diamonds"].Value
@@ -145,18 +128,13 @@ local function processListingInfo(uid, gems, item, version, shiny, amount, bough
 end
 
 local function tryPurchase(uid, gems, item, version, shiny, amount, username, class, playerid, buytimestamp, listTimestamp, ping, snipeNormal)
-    print("PURCHASING ATTEMPT START") --for testings
-    --while (buytimestamp - os.time()) > 1 then
     if buytimestamp > listTimestamp then
-        task.spawn(function()
-            while task.wait() do
-                local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
-            end)
-        task.wait(3.13 - Players.LocalPlayer:GetNetworkPing())
+      task.wait(3.12 - Players.LocalPlayer:GetNetworkPing())
     end
-    print("PURCHASING ATTEMPT END - os " .. os.time() .. " - buy " .. buytimestamp .. " - offset " .. listTimestamp) --for testings
-    local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
-    processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, class, ping, boughtMessage, snipeNormal)
+    for i = 1,50 do
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, class, ping, boughtMessage, snipeNormal)
+    end
 end
 
 Booths_Broadcast.OnClientEvent:Connect(function(username, message)
@@ -189,8 +167,7 @@ Booths_Broadcast.OnClientEvent:Connect(function(username, message)
                 local unitGems = gems/amount
 		local ping = false
 		snipeNormal = false
-                    
-                print(string.format("%s listed %s %s - %s gems, %s gems/unit", tostring(username), tostring(amount), tostring(item), tostring(gems), tostring(unitGems)))                
+                                 
                 if string.find(item, "Huge") and unitGems <= 100000 then
                     coroutine.wrap(tryPurchase)(uid, gems, item, version, shiny, amount, username, class, playerid, buytimestamp, listTimestamp, ping, snipeNormal)
                     return
@@ -265,6 +242,22 @@ local function jumpToServer()
        randomCount = 2
     end
     ts:TeleportToPlaceInstance(15502339080, servers[math.random(1, randomCount)], game:GetService("Players").LocalPlayer) 
+end
+
+if PlayerInServer < 25 then
+    while task.wait(1) do
+	jumpToServer()
+    end
+end
+
+for i = 1, PlayerInServer do
+   for ii = 1,#alts do
+        if getPlayers[i].Name == alts[ii] and alts[ii] ~= Players.LocalPlayer.Name then
+            while task.wait(1) do
+		jumpToServer()
+	    end
+        end
+    end
 end
 
 Players.PlayerRemoving:Connect(function(player)
