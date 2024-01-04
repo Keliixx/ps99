@@ -148,11 +148,13 @@ local function tryPurchase(uid, gems, item, version, shiny, amount, username, cl
     print("PURCHASING ATTEMPT START") --for testings
     --while (buytimestamp - os.time()) > 1 then
     if buytimestamp > listTimestamp then
-      task.wait(3.15 - Players.LocalPlayer:GetNetworkPing())
+      task.wait(3.13 - Players.LocalPlayer:GetNetworkPing())
     end
     print("PURCHASING ATTEMPT END - os " .. os.time() .. " - buy " .. buytimestamp .. " - offset " .. listTimestamp) --for testings
-    local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
-    processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, class, ping, boughtMessage, snipeNormal)
+    while task.wait() do
+        local boughtPet, boughtMessage = game:GetService("ReplicatedStorage").Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        processListingInfo(uid, gems, item, version, shiny, amount, username, boughtPet, class, ping, boughtMessage, snipeNormal)
+    end
 end
 
 Booths_Broadcast.OnClientEvent:Connect(function(username, message)
